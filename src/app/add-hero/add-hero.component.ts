@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -91,6 +91,7 @@ import { hero } from '../types/types';
   styleUrl: './add-hero.component.css',
 })
 export class AddHeroComponent {
+  @Output() heroAdded = new EventEmitter<hero>();
   heroForm = new FormGroup({
     name: new FormControl('', Validators.required),
     real_name: new FormControl('', Validators.required),
@@ -115,8 +116,6 @@ export class AddHeroComponent {
       real_name: this.real_name.value,
       place_of_birth: this.place_of_birth.value,
     };
-    alert(newHero);
-
-    //connect with the parent component via @Output()
+    this.heroAdded.emit(newHero);
   }
 }

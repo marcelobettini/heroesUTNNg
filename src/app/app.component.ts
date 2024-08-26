@@ -2,7 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ApiHeroService } from './services/api-hero.service';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { hero } from './types/types';
 import { HeroesComponent } from './heroes/heroes.component';
 import { AddHeroComponent } from './add-hero/add-hero.component';
@@ -16,7 +16,7 @@ import { AddHeroComponent } from './add-hero/add-hero.component';
       <h1>Heroes</h1>
       @if(heroesResult$ | async; as heroesList){
       <app-heroes [heroes]="heroesList" />
-      <app-add-hero />
+      <app-add-hero (heroAdded)="onHeroAdded($event)" />
       }@else {
       <p>Loading...</p>
       }
@@ -33,5 +33,11 @@ export class AppComponent implements OnInit {
   //Al montar el componente App se llama al servicio y se almacenan los recursos que devuelve en la variable observable heroesResult$
   ngOnInit(): void {
     this.heroesResult$ = this.apiHero.getAll();
+  }
+
+  onHeroAdded(newHero: hero): void {
+    this.heroesResult$ = this.apiHero
+      .createOne(newHero)
+      .pipe(switchMap(() => this.apiHero.getAll()));
   }
 }
